@@ -3,17 +3,17 @@ import os
 import torch
 import torch.nn as nn
 from tensorboardX import SummaryWriter
-from pcdet.config import cfg, log_config_to_file, cfg_from_list, cfg_from_yaml_file
-from pcdet.utils import common_utils
-from pcdet.datasets import build_dataloader
-from pcdet.models import build_network, model_fn_decorator
-from pcdet.models.model_utils.dsnorm import DSNorm
+from m3ed_pcdet.config import cfg, log_config_to_file, cfg_from_list, cfg_from_yaml_file
+from m3ed_pcdet.utils import common_utils
+from m3ed_pcdet.datasets import build_dataloader
+from m3ed_pcdet.models import build_network, model_fn_decorator
+from m3ed_pcdet.models.model_utils.dsnorm import DSNorm
 
 import torch.distributed as dist
 from train_utils.optimization import build_optimizer, build_scheduler
 from train_utils.train_utils import train_model
 from train_utils.train_st_utils import train_model_st, save_scratch_model
-
+from test import repeat_eval_ckpt
 
 from pathlib import Path
 import argparse
@@ -49,6 +49,8 @@ def parse_config():
     parser.add_argument('--start_epoch', type=int, default=0, help='')
     parser.add_argument('--save_to_file', action='store_true', default=False, help='')
     parser.add_argument('--cpu_core_num', default=None)
+    parser.add_argument('--eval_fov_only', action='store_true', default=False, help='')
+
 
     args = parser.parse_args()
 
@@ -256,6 +258,43 @@ def main():
     logger.info('**********************End training %s/%s(%s)**********************\n\n\n'
                 % (cfg.EXP_GROUP_PATH, cfg.TAG, args.extra_tag))
 
+    logger.info('**********************Start evaluation %s/%s(%s)**********************' %
+                (cfg.EXP_GROUP_PATH, cfg.TAG, args.extra_tag))
+
+    if args.eval_fov_only:
+        cfg.DATA_CONFIG_TAR.FOV_POINTS_ONLY = True
+
+    if cfg.get('DATA_CONFIG_TAR', None) and not args.eval_src:
+        test_set, test_loader, sampler = build_dataloader(
+            dataset_cfg=cfg.DATA_CONFIG_TAR,
+            class_names=cfg.DATA_CONFIG_TAR.CLASS_NAMES,
+            batch_size=args.batch_size,
+            dist=dist_train, workers=args.workers, logger=logger, training=False
+        )
+    else:
+        test_set, test_loader, sampler = build_dataloader(
+            dataset_cfg=cfg.DATA_CONFIG,
+            class_names=cfg.CLASS_NAMES,
+            batch_size=args.batch_size,
+            dist=dist_train, workers=args.workers, logger=logger, training=False
+        )
+
+    eval_output_dir = output_dir / 'eval' / 'eval_with_train'
+    eval_output_dir.mkdir(parents=True, exist_ok=True)
+    # Only evaluate the last args.num_epochs_to_eval epochs
+    args.start_epoch = max(args.epochs - args.num_epochs_to_eval, 0)
+
+    repeat_eval_ckpt(
+        model.module if dist_train else model,
+        test_loader, args, eval_output_dir, logger, ckpt_dir,
+        dist_test=dist_train
+    )
+    logger.info('**********************End evaluation %s/%s(%s)**********************' %
+                (cfg.EXP_GROUP_PATH, cfg.TAG, args.extra_tag))
+
+
+if __name__ == '__main__':
+    main()
 
 if __name__ == '__main__':
     main()

@@ -135,8 +135,8 @@ def checkpoint_state(model=None, optimizer=None, epoch=None, it=None):
         model_state = None
 
     try:
-        import pcdet
-        version = 'pcdet+' + pcdet.__version__
+        import m3ed_pcdet
+        version = 'pcdet+' + m3ed_pcdet.__version__
     except:
         version = 'none'
 

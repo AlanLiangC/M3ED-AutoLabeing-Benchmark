@@ -3,15 +3,15 @@ import os
 import glob
 import tqdm
 from torch.nn.utils import clip_grad_norm_
-from pcdet.utils import common_utils
-from pcdet.utils import self_training_utils
-from pcdet.config import cfg
-from pcdet.models.model_utils.dsnorm import set_ds_source, set_ds_target
+from m3ed_pcdet.utils import common_utils
+from m3ed_pcdet.utils import self_training_utils
+from m3ed_pcdet.config import cfg
+from m3ed_pcdet.models.model_utils.dsnorm import set_ds_source, set_ds_target
 
 from .train_utils import save_checkpoint, checkpoint_state
 from .optimization import build_optimizer, build_scheduler
 
-from pcdet.models import build_network, model_fn_decorator
+from m3ed_pcdet.models import build_network, model_fn_decorator
 import torch.nn as nn
 
 import wandb
@@ -181,8 +181,11 @@ def train_model_st(model, optimizer, source_loader, target_loader, model_func, l
     if accumulated_iter != 0:
         new_accumulated_iter = accumulated_iter
 
-    source_reader = common_utils.DataReader(source_loader, source_sampler)
-    source_reader.construct_iter()
+    if source_loader is not None:
+        source_reader = common_utils.DataReader(source_loader, source_sampler)
+        source_reader.construct_iter()
+    else:
+        source_reader = None
 
     '''--------- Source Model for CROSS DOMAIN DETECTION ---------'''
     if cfg.SELF_TRAIN.get('CROSS_DOMAIN_DETECTION', None) and \
@@ -242,15 +245,18 @@ def train_model_st(model, optimizer, source_loader, target_loader, model_func, l
                     ((cur_epoch % cfg.SELF_TRAIN.UPDATE_PSEUDO_LABEL_INTERVAL == 0)
                      and cur_epoch != 0):
                 target_loader.dataset.eval()
-                source_loader.dataset.eval()
+                if source_loader is not None:
+                    source_loader.dataset.eval()
                 self_training_utils.save_pseudo_label_epoch(
                     model, target_loader, rank, leave_pbar=True,
                     ps_label_dir=ps_label_dir, cur_epoch=cur_epoch,
                     source_reader=source_reader, source_model=source_model
                 )
                 target_loader.dataset.train()
-                source_loader.dataset.train()
-                cfg.SELF_TRAIN.CROSS_DOMAIN_DETECTION.ENABLE = False  # Only for the first time
+                if source_loader is not None:
+                    source_loader.dataset.train()
+                if cfg.SELF_TRAIN.get('CROSS_DOMAIN_DETECTION', False):
+                    cfg.SELF_TRAIN.CROSS_DOMAIN_DETECTION.ENABLE = False  # Only for the first time
 
                 if cfg.SELF_TRAIN.LOAD_SCRATCH_AFTER_PSEUDO_LABELING or \
                         cfg.SELF_TRAIN.LOAD_OPTIMIZER_AFTER_PSEUDO_LABELING:

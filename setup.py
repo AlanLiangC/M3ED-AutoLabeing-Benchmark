@@ -28,31 +28,37 @@ def write_version_to_file(version, target_file):
 
 
 if __name__ == '__main__':
-    version = '0.3.0+%s' % get_git_commit_number()
-    write_version_to_file(version, 'pcdet/version.py')
+    version = '0.6.0+%s' % get_git_commit_number()
+    write_version_to_file(version, 'm3ed_pcdet/version.py')
 
     setup(
-        name='pcdet',
+        name='m3ed_pcdet',
         version=version,
         description='OpenPCDet is a general codebase for 3D object detection from point cloud',
         install_requires=[
             'numpy',
-            'torch>=1.1',
-            'spconv',
+            'llvmlite',
             'numba',
             'tensorboardX',
             'easydict',
-            'pyyaml'
+            'pyyaml',
+            'scikit-image',
+            'tqdm',
+            'SharedArray',
+            # 'spconv',  # spconv has different names depending on the cuda version
         ],
+
         author='Shaoshuai Shi',
         author_email='shaoshuaics@gmail.com',
         license='Apache License 2.0',
         packages=find_packages(exclude=['tools', 'data', 'output']),
-        cmdclass={'build_ext': BuildExtension},
+        cmdclass={
+            'build_ext': BuildExtension,
+        },
         ext_modules=[
             make_cuda_ext(
                 name='iou3d_nms_cuda',
-                module='pcdet.ops.iou3d_nms',
+                module='m3ed_pcdet.ops.iou3d_nms',
                 sources=[
                     'src/iou3d_cpu.cpp',
                     'src/iou3d_nms_api.cpp',
@@ -62,7 +68,7 @@ if __name__ == '__main__':
             ),
             make_cuda_ext(
                 name='roiaware_pool3d_cuda',
-                module='pcdet.ops.roiaware_pool3d',
+                module='m3ed_pcdet.ops.roiaware_pool3d',
                 sources=[
                     'src/roiaware_pool3d.cpp',
                     'src/roiaware_pool3d_kernel.cu',
@@ -70,7 +76,7 @@ if __name__ == '__main__':
             ),
             make_cuda_ext(
                 name='roipoint_pool3d_cuda',
-                module='pcdet.ops.roipoint_pool3d',
+                module='m3ed_pcdet.ops.roipoint_pool3d',
                 sources=[
                     'src/roipoint_pool3d.cpp',
                     'src/roipoint_pool3d_kernel.cu',
@@ -78,7 +84,7 @@ if __name__ == '__main__':
             ),
             make_cuda_ext(
                 name='pointnet2_stack_cuda',
-                module='pcdet.ops.pointnet2.pointnet2_stack',
+                module='m3ed_pcdet.ops.pointnet2.pointnet2_stack',
                 sources=[
                     'src/pointnet2_api.cpp',
                     'src/ball_query.cpp',
@@ -89,11 +95,15 @@ if __name__ == '__main__':
                     'src/sampling_gpu.cu', 
                     'src/interpolate.cpp', 
                     'src/interpolate_gpu.cu',
+                    'src/voxel_query.cpp', 
+                    'src/voxel_query_gpu.cu',
+                    'src/vector_pool.cpp',
+                    'src/vector_pool_gpu.cu'
                 ],
             ),
             make_cuda_ext(
                 name='pointnet2_batch_cuda',
-                module='pcdet.ops.pointnet2.pointnet2_batch',
+                module='m3ed_pcdet.ops.pointnet2.pointnet2_batch',
                 sources=[
                     'src/pointnet2_api.cpp',
                     'src/ball_query.cpp',
@@ -106,6 +116,22 @@ if __name__ == '__main__':
                     'src/sampling_gpu.cu',
 
                 ],
+            ),
+            make_cuda_ext(
+                name="bev_pool_ext",
+                module="m3ed_pcdet.ops.bev_pool",
+                sources=[
+                    "src/bev_pool.cpp",
+                    "src/bev_pool_cuda.cu",
+                ],
+            ),
+            make_cuda_ext(
+                name='ingroup_inds_cuda',
+                module='m3ed_pcdet.ops.ingroup_inds',
+                sources=[
+                    'src/ingroup_inds.cpp',
+                    'src/ingroup_inds_kernel.cu',
+                ]
             ),
         ],
     )

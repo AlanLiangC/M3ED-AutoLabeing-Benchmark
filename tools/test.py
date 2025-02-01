@@ -10,12 +10,12 @@ import argparse
 import numpy as np
 from pathlib import Path
 import torch.distributed as dist
-from pcdet.datasets import build_dataloader
-from pcdet.models import build_network
-from pcdet.utils import common_utils
-from pcdet.config import cfg, cfg_from_list, cfg_from_yaml_file, log_config_to_file
+from m3ed_pcdet.datasets import build_dataloader
+from m3ed_pcdet.models import build_network
+from m3ed_pcdet.utils import common_utils
+from m3ed_pcdet.config import cfg, cfg_from_list, cfg_from_yaml_file, log_config_to_file
 from eval_utils import eval_utils
-from pcdet.models.model_utils.dsnorm import DSNorm
+from m3ed_pcdet.models.model_utils.dsnorm import DSNorm
 
 import wandb
 
@@ -46,6 +46,7 @@ def parse_config():
     parser.add_argument('--test_dataset', type=str, default='T',
                         help='eval tag for this experiment')
     parser.add_argument('--cpu_core_num', default=None)
+    parser.add_argument('--eval_fov_only', action='store_true', default=False, help='')
 
     args = parser.parse_args()
 
@@ -235,6 +236,9 @@ def main():
     for key, val in vars(args).items():
         logger.info('{:16} {}'.format(key, val))
     log_config_to_file(cfg, logger=logger)
+
+    if args.eval_fov_only:
+        cfg.DATA_CONFIG_TAR.FOV_POINTS_ONLY = True
 
     ckpt_dir = args.ckpt_dir if args.ckpt_dir is not None else output_dir / 'ckpt'
 

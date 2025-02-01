@@ -5,9 +5,9 @@ import numpy as np
 import torch
 import tqdm
 
-from pcdet.models import load_data_to_gpu
-from pcdet.utils import common_utils
-from pcdet.models.model_utils.dsnorm import set_ds_target
+from m3ed_pcdet.models import load_data_to_gpu
+from m3ed_pcdet.utils import common_utils
+from m3ed_pcdet.models.model_utils.dsnorm import set_ds_target
 
 import statistics
 
