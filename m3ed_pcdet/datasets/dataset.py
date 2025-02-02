@@ -252,11 +252,11 @@ class DatasetTemplate(torch_data.Dataset):
                     'gt_boxes_mask': gt_boxes_mask
                 }
             )
-
-            if cfg.DATA_CONFIG.DATASET == 'NuScenesDataset' and len(data_dict['gt_boxes']) != 0:
-                data_dict['gt_names'][data_dict['gt_names'] == 'motorcycle'] = 'bicycle'
-                if 'gt_classes' in data_dict.keys():
-                    data_dict['gt_classes'][data_dict['gt_classes'] == 4] = 3
+            if cfg.get('DATA_CONFIG', False):
+                if cfg.DATA_CONFIG.DATASET == 'NuScenesDataset' and len(data_dict['gt_boxes']) != 0:
+                    data_dict['gt_names'][data_dict['gt_names'] == 'motorcycle'] = 'bicycle'
+                    if 'gt_classes' in data_dict.keys():
+                        data_dict['gt_classes'][data_dict['gt_classes'] == 4] = 3
 
             if cfg.get('SELF_TRAIN', None) and cfg.SELF_TRAIN.get('PS_SAMPLING', None) and cfg.SELF_TRAIN.PS_SAMPLING.ENABLE:
                 ps_sampling(data_dict)

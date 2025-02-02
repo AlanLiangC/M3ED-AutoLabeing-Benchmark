@@ -50,6 +50,7 @@ def parse_config():
     parser.add_argument('--start_epoch', type=int, default=0, help='')
     parser.add_argument('--save_to_file', action='store_true', default=False, help='')
     parser.add_argument('--cpu_core_num', default=None)
+    parser.add_argument('--eval_src', action='store_true', default=False, help='')
     parser.add_argument('--eval_fov_only', action='store_true', default=False, help='')
 
 
