@@ -7,7 +7,7 @@ DATA_CONFIG:
     EVAL_METRIC: KittiDataset
 
     DATA_AUGMENTOR:
-        DISABLE_AUG_LIST: ['normalize_object_size']
+        DISABLE_AUG_LIST: ['normalize_object_size', 'gt_sampling']
         AUG_CONFIG_LIST:
             - NAME: gt_sampling
               USE_ROAD_PLANE: False
