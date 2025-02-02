@@ -37,3 +37,4 @@ vis_tools
 m3ed_output
 *.log
 *.pth
+tools/wandb
