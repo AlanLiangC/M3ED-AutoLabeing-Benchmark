@@ -175,7 +175,10 @@ def init_wandb(args, cfg):
     train_mode_and_aug = train_mode + '-' + aug_type
 
     # cls_num = 'MC' if len(cfg.CLASS_NAMES) > 1 else 'CAR'
-    run_name = 'EVAL_ON_' + args.test_dataset.upper() + '-' + \
+    # run_name = 'EVAL_ON_' + args.test_dataset.upper() + '-' + \
+    #            train_mode_and_aug + \
+    #            '-' + cfg.MODEL.NAME + '-' + args.extra_tag
+    run_name = 'EVAL_ON_' + '-' + \
                train_mode_and_aug + \
                '-' + cfg.MODEL.NAME + '-' + args.extra_tag
     wandb.run.name = run_name
