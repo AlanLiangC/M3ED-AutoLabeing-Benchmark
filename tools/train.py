@@ -52,6 +52,7 @@ def parse_config():
     parser.add_argument('--cpu_core_num', default=None)
     parser.add_argument('--eval_src', action='store_true', default=False, help='')
     parser.add_argument('--eval_fov_only', action='store_true', default=False, help='')
+    parser.add_argument('--num_epochs_to_eval', type=int, default=30, help='number of checkpoints to be evaluated')
 
 
     args = parser.parse_args()
