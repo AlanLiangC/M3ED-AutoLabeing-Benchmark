@@ -232,7 +232,8 @@ def train_model_st(model, optimizer, source_loader, target_loader, model_func, l
         for cur_epoch in tbar:
             if target_sampler is not None:
                 target_sampler.set_epoch(cur_epoch)
-                source_reader.set_cur_epoch(cur_epoch)
+                if source_loader is not None:
+                    source_reader.set_cur_epoch(cur_epoch)
 
             # train one epoch
             if lr_warmup_scheduler is not None and cur_epoch < optim_cfg.WARMUP_EPOCH:
