@@ -21,7 +21,7 @@ import datetime
 import glob
 import wandb
 
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 def parse_config():
@@ -113,6 +113,7 @@ def main():
             args.tcp_port, args.local_rank, backend='nccl'
         )
         dist_train = True
+        print('total_gpus: %d', total_gpus)
 
     if args.batch_size is None:
         args.batch_size = cfg.OPTIMIZATION.BATCH_SIZE_PER_GPU
