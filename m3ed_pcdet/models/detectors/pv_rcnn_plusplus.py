@@ -37,7 +37,7 @@ class PVRCNNPlusPlus(Detector3DTemplate):
             }
             return ret_dict, tb_dict, disp_dict
         else:
-            pred_dicts, recall_dicts = self.post_processing(batch_dict)
+            pred_dicts, recall_dicts = self.post_processing_multicriterion(batch_dict)
             return pred_dicts, recall_dicts
 
     def get_training_loss(self):

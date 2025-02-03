@@ -380,6 +380,7 @@ class KittiDataset(DatasetTemplate):
         if cfg.DATA_CONFIG.DATASET == 'NuScenesDataset':
             class_names = ['Car',  'Pedestrian', 'Cyclist']
             map_name_to_kitti = {
+                'Vehicle': 'Car',
                 'car': 'Car',
                 'pedestrian': 'Pedestrian',
                 'bicycle': 'Cyclist',
