@@ -247,11 +247,11 @@ def train_model_st(model, optimizer, source_loader, target_loader, model_func, l
                 target_loader.dataset.eval()
                 if source_loader is not None:
                     source_loader.dataset.eval()
-                # self_training_utils.save_pseudo_label_epoch(
-                #     model, target_loader, rank, leave_pbar=True,
-                #     ps_label_dir=ps_label_dir, cur_epoch=cur_epoch,
-                #     source_reader=source_reader, source_model=source_model
-                # )
+                self_training_utils.save_pseudo_label_epoch(
+                    model, target_loader, rank, leave_pbar=True,
+                    ps_label_dir=ps_label_dir, cur_epoch=cur_epoch,
+                    source_reader=source_reader, source_model=source_model
+                )
                 target_loader.dataset.train()
                 if source_loader is not None:
                     source_loader.dataset.train()
