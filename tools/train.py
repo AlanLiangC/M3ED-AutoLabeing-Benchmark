@@ -141,6 +141,7 @@ def main():
 
     # log to file
     logger.info('**********************Start logging**********************')
+    logger.info('total_gpus: %d', total_gpus)
     gpu_list = os.environ['CUDA_VISIBLE_DEVICES'] if 'CUDA_VISIBLE_DEVICES' in os.environ.keys() else 'ALL'
     logger.info('CUDA_VISIBLE_DEVICES=%s' % gpu_list)
 
