@@ -8,13 +8,15 @@ from .kitti.kitti_dataset import KittiDataset
 from .waymo.waymo_dataset import WaymoDataset
 from .nuscenes.nuscenes_dataset import NuScenesDataset
 from .m3ed.m3ed_cross_platform import M3ED_CP_Dataset
+from .m3ed.m3ed_dataset_seqs import OFFM3EDDatasetSeqs
 
 __all__ = {
     'DatasetTemplate': DatasetTemplate,
     'KittiDataset': KittiDataset,
     'WaymoDataset': WaymoDataset,
     'NuScenesDataset': NuScenesDataset,
-    'M3ED_CP_Dataset': M3ED_CP_Dataset
+    'M3ED_CP_Dataset': M3ED_CP_Dataset, 
+    'OFFM3EDDatasetSeqs': OFFM3EDDatasetSeqs
 }
 
 
