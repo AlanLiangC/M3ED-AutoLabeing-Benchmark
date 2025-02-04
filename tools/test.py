@@ -34,6 +34,7 @@ def parse_config():
     parser.add_argument('--launcher', choices=['none', 'pytorch', 'slurm'], default='none')
     parser.add_argument('--tcp_port', type=int, default=18888, help='tcp port for distrbuted training')
     parser.add_argument('--local_rank', type=int, default=0, help='local rank for distributed training')
+    parser.add_argument('--local-rank', type=int, default=0, help='local rank for distributed training')
     parser.add_argument('--set', dest='set_cfgs', default=None, nargs=argparse.REMAINDER,
                         help='set extra config keys if needed')
 
