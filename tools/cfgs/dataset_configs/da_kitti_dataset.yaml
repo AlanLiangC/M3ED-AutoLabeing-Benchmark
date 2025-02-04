@@ -2,7 +2,7 @@ DATASET: 'KittiDataset'
 DATA_PATH: '../data/kitti'
 
 POINT_CLOUD_RANGE: [-75.2, -75.2, -2, 75.2, 75.2, 4]
-
+FOV_POINTS_ONLY: True
 DATA_SPLIT: {
     'train': train,
     'test': val
