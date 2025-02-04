@@ -381,6 +381,7 @@ class KittiDataset(DatasetTemplate):
             class_names = ['Car',  'Pedestrian', 'Cyclist']
             map_name_to_kitti = {
                 'Vehicle': 'Car',
+                'Car': 'Car',
                 'Pedestrian': 'Pedestrian',
                 'Cyclist': 'Cyclist',
                 'car': 'Car',
