@@ -277,10 +277,10 @@ def train_model_st(model, optimizer, source_loader, target_loader, model_func, l
                     new_accumulated_iter = 1
             
             # curriculum data augmentation
-            if cfg.SELF_TRAIN.get('PROG_AUG', None) and cfg.SELF_TRAIN.PROG_AUG.ENABLED and \
-                (cur_epoch in cfg.SELF_TRAIN.PROG_AUG.UPDATE_AUG):
-                target_loader.dataset.data_augmentor.re_prepare(
-                    augmentor_configs=None, intensity=cfg.SELF_TRAIN.PROG_AUG.SCALE)
+            # if cfg.SELF_TRAIN.get('PROG_AUG', None) and cfg.SELF_TRAIN.PROG_AUG.ENABLED and \
+            #     (cur_epoch in cfg.SELF_TRAIN.PROG_AUG.UPDATE_AUG):
+            #     target_loader.dataset.data_augmentor.re_prepare(
+            #         augmentor_configs=None, intensity=cfg.SELF_TRAIN.PROG_AUG.SCALE)
 
             new_accumulated_iter, accumulated_iter = train_one_epoch_st(
                 model, optimizer, source_reader, target_loader, model_func,
