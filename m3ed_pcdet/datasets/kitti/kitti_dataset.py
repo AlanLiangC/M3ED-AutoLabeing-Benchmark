@@ -377,10 +377,12 @@ class KittiDataset(DatasetTemplate):
         eval_det_annos = copy.deepcopy(det_annos)
         eval_gt_annos = [copy.deepcopy(info['annos']) for info in self.kitti_infos]
 
-        if cfg.DATA_CONFIG.DATASET == 'NuScenesDataset':
+        if cfg.DATA_CONFIG.DATASET == 'NuScenesDataset' or  cfg.DATA_CONFIG.DATASET == 'WaymoDataset':
             class_names = ['Car',  'Pedestrian', 'Cyclist']
             map_name_to_kitti = {
                 'Vehicle': 'Car',
+                'Pedestrian': 'Pedestrian',
+                'Cyclist': 'Cyclist',
                 'car': 'Car',
                 'pedestrian': 'Pedestrian',
                 'bicycle': 'Cyclist',
