@@ -150,6 +150,8 @@ class DatasetTemplate(torch_data.Dataset):
             if isinstance(self_training_utils.load_ps_label(
             input_dict['frame_id']), dict) else \
             self_training_utils.load_ps_label(input_dict['frame_id'])
+        # class_of_interest = np.isin(gt_boxes[:, 7], [1,2,3])
+        # gt_boxes = gt_boxes[class_of_interest]
         gt_scores = gt_boxes[:, 8]
         gt_classes = gt_boxes[:, 7]
         gt_boxes = gt_boxes[:, :7]
