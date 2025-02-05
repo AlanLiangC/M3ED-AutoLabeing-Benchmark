@@ -13,12 +13,11 @@ from ...utils import box_utils
 from m3ed_pcdet.config import cfg
 
 class M3ED_SEQ:
-    def __init__(self, sequence_path, dataset_cfg, class_names, training):
+    def __init__(self, sequence_path, dataset_cfg, class_names):
         self.dataset_cfg = dataset_cfg
         self.sequence_path = sequence_path
         self.class_names = class_names
         self.ori_class_names = ['Vehicle', 'Pedestrian', 'Pedestrian']
-        self.training = training
         files = os.listdir(self.sequence_path)
         h5_files = [file for file in files if file.endswith('.h5')]
         for file in h5_files:
@@ -197,15 +196,6 @@ class M3ED_SEQ:
                 'gt_names': gt_names,
             })
 
-        if self.dataset_cfg.get('REMOVE_ORIGIN_GTS', None) and self.training:
-            input_dict['points'] = box_utils.remove_points_in_boxes3d(input_dict['points'], input_dict['gt_boxes'])
-            mask = np.zeros(gt_boxes_info[:,:7].shape[0], dtype=np.bool_)
-            input_dict['gt_boxes'] = input_dict['gt_boxes'][mask]
-            input_dict['gt_names'] = input_dict['gt_names'][mask]
-
-        if self.dataset_cfg.get('USE_PSEUDO_LABEL', None) and self.training:
-            input_dict['gt_boxes'] = None
-
         return input_dict
 
 class OFFM3EDDatasetSeqs(DatasetTemplate):
@@ -236,8 +226,7 @@ class OFFM3EDDatasetSeqs(DatasetTemplate):
         for i in range(self.seq_num):
             setattr(self, f'seq_{i}', M3ED_SEQ(sequence_paths[i], 
                                                self.dataset_cfg,
-                                               self.class_names,
-                                               self.training))
+                                               self.class_names))
 
         seq_frame_num = [getattr(getattr(self, f'seq_{i}'), 'sweeps_num') \
                          for i in range(self.seq_num)]
@@ -425,6 +414,16 @@ class OFFM3EDDatasetSeqs(DatasetTemplate):
         single_frame_info = self.frame_info[index]
         seq_idx, frame_idx = [eval(fac) for fac in single_frame_info.split('_')]
         input_dict = getattr(self, f'seq_{seq_idx}').__getitem__(frame_idx)
+
+
+        if self.dataset_cfg.get('REMOVE_ORIGIN_GTS', None) and self.training:
+            input_dict['points'] = box_utils.remove_points_in_boxes3d(input_dict['points'], input_dict['gt_boxes'])
+            mask = np.zeros(input_dict['gt_boxes'][:,:7].shape[0], dtype=np.bool_)
+            input_dict['gt_boxes'] = input_dict['gt_boxes'][mask]
+            input_dict['gt_names'] = input_dict['gt_names'][mask]
+
+        if self.dataset_cfg.get('USE_PSEUDO_LABEL', None) and self.training:
+            input_dict['gt_boxes'] = None
 
         # load saved pseudo label for unlabel data
         if self.dataset_cfg.get('USE_PSEUDO_LABEL', None) and self.training:
