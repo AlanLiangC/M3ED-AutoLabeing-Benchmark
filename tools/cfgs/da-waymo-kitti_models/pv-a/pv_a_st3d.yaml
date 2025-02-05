@@ -42,7 +42,7 @@ DATA_CONFIG_TAR:
     TARGET: True
     FOV_POINTS_ONLY: False
     USE_PSEUDO_LABEL: True
-    CLASS_NAMES: ['Vehicle', 'Pedestrian', 'Cyclist']
+    CLASS_NAMES: ['Car', 'Pedestrian', 'Cyclist']
     SHIFT_COOR: [0.0, 0.0, 1.6]
 
     DATA_AUGMENTOR:

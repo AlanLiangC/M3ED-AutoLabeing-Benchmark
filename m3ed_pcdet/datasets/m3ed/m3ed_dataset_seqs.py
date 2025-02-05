@@ -177,9 +177,12 @@ class M3ED_SEQ:
         gt_boxes_info = self.anno_dict[frame_id]['gt_boxes']
         if gt_boxes_info.shape[0] > 0:
             gt_names = np.array(self.ori_class_names)[np.abs(gt_boxes_info[:,-2].astype(np.int32)) - 1]
+            gt_boxes_lidar = gt_boxes_info[:,:7]
+            if self.dataset_cfg.get('SHIFT_COOR', None):
+                gt_boxes_lidar[:, 0:3] += self.dataset_cfg.SHIFT_COOR
             input_dict.update({
                 'gt_names': gt_names,
-                'gt_boxes': gt_boxes_info[:,:7]
+                'gt_boxes': gt_boxes_lidar
             })
         else:
             input_dict.update({
@@ -190,10 +193,9 @@ class M3ED_SEQ:
         if cfg.get('SELF_TRAIN', None) and cfg.SELF_TRAIN.get('REPORT_PS_LABEL_QUALITY', None) and cfg.SELF_TRAIN.REPORT_PS_LABEL_QUALITY:
             gt_names = np.array(['Vehicle'if item == 'Car' else item for item in gt_names])
 
-        input_dict.update({
-            'gt_names': gt_names,
-            'gt_boxes': gt_boxes_info[:,:7]
-        })
+            input_dict.update({
+                'gt_names': gt_names,
+            })
 
         if self.dataset_cfg.get('REMOVE_ORIGIN_GTS', None) and self.training:
             input_dict['points'] = box_utils.remove_points_in_boxes3d(input_dict['points'], input_dict['gt_boxes'])
@@ -245,7 +247,8 @@ class OFFM3EDDatasetSeqs(DatasetTemplate):
                 [f'{i}_{frame_id}' for frame_id in range(num)]
             )
         self.frame_info = frame_info
-        self.logger.info('Total samples for M3ED dataset: %d' % (len(frame_info)))
+        if self.logger is not None:
+            self.logger.info('Total samples for M3ED dataset: %d' % (len(frame_info)))
 
     def generate_prediction_dicts(self, batch_dict, pred_dicts, class_names, output_path=None):
         """
@@ -298,8 +301,9 @@ class OFFM3EDDatasetSeqs(DatasetTemplate):
         from ..kitti.kitti_object_eval_python import eval as kitti_eval
 
         map_name_to_kitti = {
+            'car': 'Car',
             'Vehicle': 'Car',
-            'Pedestrian': 'Pedestrian',
+            'Pedestrian': 'Pedestrian'
         }
 
         def transform_to_kitti_format(annos, info_with_fakelidar=False, is_gt=False):

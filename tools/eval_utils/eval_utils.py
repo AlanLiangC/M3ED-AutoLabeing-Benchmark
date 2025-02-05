@@ -182,7 +182,7 @@ def eval_one_epoch(cfg, model, dataloader, epoch_id, logger, dist_test=False, sa
         eval_metric=cfg.MODEL.POST_PROCESSING.EVAL_METRIC,
         output_path=final_output_dir
     )
-    result_dict = add_avg_performance(dataset, result_dict)
+    # result_dict = add_avg_performance(dataset, result_dict)
     logger.info(result_str)
     ret_dict.update(result_dict)
 
